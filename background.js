@@ -1,33 +1,38 @@
-// Add a new site to the block list
-function blockSite(siteUrl) {
-  const urlFilter = `*://${siteUrl}/*`;
-
-  // Generate a new rule for blocking the site
-  const newRule = {
-    id: Date.now(), // Use a unique id for each rule
-    priority: 1,
-    action: {
-      type: "block"
-    },
-    condition: {
-      urlFilter: urlFilter,
-      resourceTypes: ["main_frame"]
-    }
-  };
-
-  // Add the new blocking rule dynamically
-  chrome.declarativeNetRequest.updateDynamicRules({
-    addRules: [newRule],
-    removeRuleIds: []
-  }, () => {
-    console.log(`Blocked: ${siteUrl}`);
+chrome.runtime.onInstalled.addListener(() => {
+  // Enable all rule sets
+  chrome.declarativeNetRequest.updateEnabledRulesets({
+    disableRulesetIds: ["ruleset_1"]
+    //enableRulesetIds: ["ruleset_1"]
   });
-}
+});
 
-// Example: remove all rules if needed
-function clearAllBlockedSites() {
-  chrome.declarativeNetRequest.updateDynamicRules({
-    addRules: [],
-    removeRuleIds: ['all'] // Clears all rules
-  });
-}
+// Listen for messages to enable or disable rules
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "enableRuleset") {
+    chrome.declarativeNetRequest.updateEnabledRulesets({
+      enableRulesetIds: ["ruleset_1"]
+    }, () => {
+      if (chrome.runtime.lastError) {
+        console.error("Error enabling ruleset:", chrome.runtime.lastError);
+        sendResponse({ status: "error", message: chrome.runtime.lastError });
+      } else {
+        console.log("Ruleset 'ruleset_1' enabled.");
+        sendResponse({ status: "success", message: "Ruleset enabled." });
+      }
+    });
+  } else if (message.action === "disableRuleset") {
+    chrome.declarativeNetRequest.updateEnabledRulesets({
+      disableRulesetIds: ["ruleset_1"]
+    }, () => {
+      if (chrome.runtime.lastError) {
+        console.error("Error disabling ruleset:", chrome.runtime.lastError);
+        sendResponse({ status: "error", message: chrome.runtime.lastError });
+      } else {
+        console.log("Ruleset 'ruleset_1' disabled.");
+        sendResponse({ status: "success", message: "Ruleset disabled." });
+      }
+    });
+  }
+  // Return true to indicate an async sendResponse
+  return true;
+});

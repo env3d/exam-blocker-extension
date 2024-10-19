@@ -6,11 +6,13 @@ window.addEventListener("message", (event) => {
     // Send a message to popup.js via the runtime
     // chrome.runtime.sendMessage({ message: event.data.payload });
     chrome.storage.local.set( { global: event.data.payload });
+    chrome.runtime.sendMessage({ action: "enableRuleset" });    
   }
 });
 
 window.addEventListener('load', evt => {
   chrome.storage.local.clear();
+  chrome.runtime.sendMessage({ action: "disableRuleset" });
   // Inject a script to send a message to the content script
   const script = document.createElement('script');
   script.src = chrome.runtime.getURL('getGlobal.js');
