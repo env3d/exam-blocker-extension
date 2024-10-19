@@ -4,16 +4,24 @@
   "version": "1.0",
   "description": "Blocker extension for used during exams",
   "permissions": [
+    "cookies",
     "declarativeNetRequest",
     "declarativeNetRequestWithHostAccess",
     "storage",
     "tabs",
-    "activeTab"
+    "activeTab",
+    "scripting"
   ],
   "content_scripts": [
     {
       "matches": ["https://d2l.langara.bc.ca/*"],
       "js": ["content.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["getGlobal.js"],
+      "matches": ["https://d2l.langara.bc.ca/*"]
     }
   ],
   "background": {

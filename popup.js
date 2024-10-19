@@ -1,19 +1,24 @@
-document.getElementById('addSiteBtn').addEventListener('click', function() {
-  const siteInput = document.getElementById('siteInput').value.trim();
-  if (siteInput) {
-    blockSite(siteInput);
-    displayBlockedSite(siteInput);
-  }
+
+
+
+window.addEventListener('load', evt => {
+  console.log('hello popup');
+
+  chrome.storage.local.get(["global"], result => {
+    getAllCookies(result["global"].UserName);
+  });
+  
 });
 
-function displayBlockedSite(site) {
-  const siteList = document.getElementById('siteList');
-  const li = document.createElement('li');
-  li.textContent = site;
-  siteList.appendChild(li);
+
+function getAllCookies(userName) {
+  const domain = 'd2l.langara.bc.ca';
+  chrome.cookies.getAll({ domain: domain }, function(cookies) {
+    console.log(`Cookies for ${domain}:`, cookies);
+    cookies.unshift({userid: userName});
+    //const launch_id = btoa(JSON.stringify(cookies));
+    document.getElementById('launch_id').innerHTML = JSON.stringify(cookies, null, 2);
+  });
 }
 
-// Load initial blocked sites (if stored elsewhere)
-chrome.storage.local.get({blockedSites: []}, function(data) {
-  data.blockedSites.forEach(site => displayBlockedSite(site));
-});
+// window.addEventListener('load', getAllCookies());
