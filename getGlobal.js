@@ -1,1 +1,3 @@
-window.postMessage({ type: 'Global', payload: window.Global }, '*');
+if (window.Global) {
+  window.postMessage({ type: 'Global', payload: window.Global }, '*');
+}

@@ -5,7 +5,11 @@ window.addEventListener('load', evt => {
   console.log('hello popup');
 
   chrome.storage.local.get(["global"], result => {
-    getAllCookies(result["global"].UserName);
+    if (result["global"] && result["global"].UserName) {
+      getAllCookies(result["global"].UserName);
+    } else {
+      document.getElementById('launch_id').innerHTML = "Not in a quiz";      
+    }
   });
   
 });
